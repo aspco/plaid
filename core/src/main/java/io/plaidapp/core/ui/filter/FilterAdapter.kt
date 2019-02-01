@@ -35,8 +35,37 @@ class FilterAdapter : ListAdapter<SourceUiModel, FilterViewHolder>(sourceUiModel
         setHasStableIds(true)
     }
 
-    fun highlightFilter(adapterPosition: Int) {
-        notifyItemChanged(adapterPosition, HIGHLIGHT)
+    private val lastAddedItemIndexes = mutableListOf<Int>()
+
+    fun highlightFilter() {
+        lastAddedItemIndexes.forEach {
+            notifyItemChanged(it, HIGHLIGHT)
+        }
+    }
+
+    override fun submitList(list: MutableList<SourceUiModel>?) {
+        updateLastAddedItemIndexes(list)
+        super.submitList(list)
+    }
+
+    private fun updateLastAddedItemIndexes(list: List<SourceUiModel>?) {
+        lastAddedItemIndexes.clear()
+        if (list == null || list.size <= itemCount) {
+            return
+        }
+        var itemsAdded = 0
+        for (i in 0 until itemCount) {
+            val item = getItem(i)
+            if (item.key != list[i + itemsAdded].key) {
+                // we have a new item
+                lastAddedItemIndexes.add(i + itemsAdded)
+                itemsAdded++
+            }
+        }
+        val lastItems = (itemCount + itemsAdded)
+        for(i in lastItems until list.size){
+            lastAddedItemIndexes.add(i)
+        }
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): FilterViewHolder {

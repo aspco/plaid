@@ -703,6 +703,7 @@ public class HomeActivity extends FragmentActivity {
                 // scroll to the new item(s)
                 filtersList.smoothScrollToPosition(lastPosition);
                 filtersList.setOnTouchListener(filtersTouch);
+                filtersAdapter.highlightFilter();
             }
 
             @Override
